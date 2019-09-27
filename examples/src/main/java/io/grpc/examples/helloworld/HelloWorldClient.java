@@ -27,12 +27,15 @@ import java.util.logging.Logger;
  * A simple client that requests a greeting from the {@link HelloWorldServer}.
  */
 public class HelloWorldClient {
+
   private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName());
 
   private final ManagedChannel channel;
   private final GreeterGrpc.GreeterBlockingStub blockingStub;
 
-  /** Construct client connecting to HelloWorld server at {@code host:port}. */
+  /**
+   * Construct client connecting to HelloWorld server at {@code host:port}.
+   */
   public HelloWorldClient(String host, int port) {
     this(ManagedChannelBuilder.forAddress(host, port)
         // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
@@ -41,7 +44,9 @@ public class HelloWorldClient {
         .build());
   }
 
-  /** Construct client for accessing RouteGuide server using the existing channel. */
+  /**
+   * Construct client for accessing RouteGuide server using the existing channel.
+   */
   HelloWorldClient(ManagedChannel channel) {
     this.channel = channel;
     blockingStub = GreeterGrpc.newBlockingStub(channel);
@@ -51,7 +56,9 @@ public class HelloWorldClient {
     channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
   }
 
-  /** Say hello to server. */
+  /**
+   * Say hello to server.
+   */
   public void greet(String name) {
     logger.info("Will try to greet " + name + " ...");
     HelloRequest request = HelloRequest.newBuilder().setName(name).build();
@@ -63,6 +70,17 @@ public class HelloWorldClient {
       return;
     }
     logger.info("Greeting: " + response.getMessage());
+
+    logger.info("Will try to greet again " + name + " ...");
+    HelloRequest requestAgain = HelloRequest.newBuilder().setName(name).build();
+    HelloReply responseAgain;
+    try {
+      responseAgain = blockingStub.sayHelloAgain(requestAgain);
+    } catch (StatusRuntimeException e) {
+      logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+      return;
+    }
+    logger.info("Greeting again: " + responseAgain.getMessage());
   }
 
   /**
@@ -71,6 +89,7 @@ public class HelloWorldClient {
    */
   public static void main(String[] args) throws Exception {
     HelloWorldClient client = new HelloWorldClient("localhost", 50051);
+    args = new String[]{"simon"};
     try {
       /* Access a service running on the local machine on port 50051 */
       String user = "world";

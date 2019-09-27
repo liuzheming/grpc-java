@@ -26,6 +26,7 @@ import java.util.logging.Logger;
  * Server that manages startup/shutdown of a {@code Greeter} server.
  */
 public class HelloWorldServer {
+
   private static final Logger logger = Logger.getLogger(HelloWorldServer.class.getName());
 
   private Server server;
@@ -78,8 +79,18 @@ public class HelloWorldServer {
     @Override
     public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
       HelloReply reply = HelloReply.newBuilder().setMessage("Hello " + req.getName()).build();
+      logger.info(reply.getMessage());
       responseObserver.onNext(reply);
       responseObserver.onCompleted();
     }
+
+    @Override
+    public void sayHelloAgain(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
+      HelloReply reply = HelloReply.newBuilder().setMessage("HelloAgain " + req.getName()).build();
+      logger.info(reply.getMessage());
+      responseObserver.onNext(reply);
+      responseObserver.onCompleted();
+    }
+
   }
 }
